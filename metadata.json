@@ -1,0 +1,5 @@
+{
+  "name": "Analisador de Loteria Preditivo",
+  "description": "Uma aplicação web para analisar resultados de loteria, visualizar padrões em 2D e 3D, e gerar novos jogos com base em probabilidades estatísticas, eliminando combinações improváveis.",
+  "requestFramePermissions": []
+}
