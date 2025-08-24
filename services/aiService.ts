@@ -100,8 +100,18 @@ const tools = [
 
 const getChatInstance = () => {
     if (!chat) {
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+        
+        if (!apiKey) {
+            throw new Error(
+                "Chave da API do Gemini não encontrada. " +
+                "Crie um arquivo .env.local baseado no env.local.example e " +
+                "adicione sua VITE_GEMINI_API_KEY obtida em: https://makersuite.google.com/app/apikey"
+            );
+        }
+        
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey });
             chat = ai.chats.create({
                 model: 'gemini-2.5-flash',
                 config: {

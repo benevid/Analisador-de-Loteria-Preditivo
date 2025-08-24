@@ -1,18 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Analisador de Loteria</title>
+    <meta name="description" content="Analisador de Loteria Preditivo - Analise padrões, visualize dados e gere jogos inteligentes" />
+    <title>Analisador de Loteria Preditivo</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="/styles.css" />
+    
+    <!-- Configurações do Tailwind -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              slate: {
+                850: '#1e293b',
+                950: '#0f172a'
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'system-ui', 'sans-serif']
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.3s ease-in-out',
+              'slide-up': 'slideUp 0.4s ease-out',
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            }
+          }
+        }
+      }
+    </script>
+    
     <style>
       body {
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      }
+      
+      /* Loading screen */
+      #loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #0f172a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.3s ease-out;
+      }
+      
+      #loading-screen.hidden {
+        opacity: 0;
+        pointer-events: none;
       }
     </style>
-  <script type="importmap">
+    
+    <script type="importmap">
 {
   "imports": {
     "react/": "https://esm.sh/react@18.2.0/",
@@ -28,7 +81,41 @@
 </script>
 </head>
   <body class="bg-slate-900 text-slate-200">
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+      <div class="text-center">
+        <div class="lottery-spinner mx-auto mb-4"></div>
+        <div class="text-lg font-semibold text-cyan-400">Carregando Analisador de Loteria...</div>
+        <div class="text-sm text-slate-400 mt-2">Preparando visualizações e algoritmos</div>
+      </div>
+    </div>
+    
     <div id="root"></div>
+    
+    <script>
+      // Remover loading screen após carregamento
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const loadingScreen = document.getElementById('loading-screen');
+          if (loadingScreen) {
+            loadingScreen.classList.add('hidden');
+            setTimeout(() => loadingScreen.remove(), 300);
+          }
+        }, 1000);
+      });
+      
+      // Error handling global
+      window.addEventListener('error', (event) => {
+        console.error('Global error:', event.error);
+        // Opcional: enviar para analytics
+      });
+      
+      window.addEventListener('unhandledrejection', (event) => {
+        console.error('Unhandled promise rejection:', event.reason);
+        // Opcional: enviar para analytics
+      });
+    </script>
+    
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>

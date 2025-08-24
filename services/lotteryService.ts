@@ -56,6 +56,176 @@ export const parseAndMergeGames = (
   });
 };
 
+// Função para análise com conexões SEQUENCIAIS (5->8->13->15...)
+export const analyzeGamesSequential = (games: Game[], maxGames: number): AnalysisResult | null => {
+  if (games.length === 0 || maxGames <= 0) return null;
+
+  // Usar apenas os primeiros N jogos
+  const selectedGames = games.slice(0, Math.min(maxGames, games.length));
+  
+  console.log(`Análise SEQUENCIAL: usando ${selectedGames.length} jogos com conexões sequenciais`);
+
+  const nodeFrequencies: Map<number, number> = new Map();
+  const edgeFrequencies: Map<string, number> = new Map();
+
+  LOTTERY_NUMBERS.forEach(num => nodeFrequencies.set(num, 0));
+
+  for (const game of selectedGames) {
+    // Usar a ordem ORIGINAL do resultado (não ordenado)
+    // Isso cria conexões sequenciais: 5->8, 8->13, 13->15, etc.
+    
+    // Contar frequência dos números
+    for (const num of game) {
+      nodeFrequencies.set(num, (nodeFrequencies.get(num) || 0) + 1);
+    }
+    
+    // CONEXÕES SEQUENCIAIS: apenas números adjacentes na sequência
+    for (let i = 0; i < game.length - 1; i++) {
+      const source = Math.min(game[i], game[i + 1]); // Menor primeiro
+      const target = Math.max(game[i], game[i + 1]); // Maior depois
+      const key = `${source}-${target}`;
+      edgeFrequencies.set(key, (edgeFrequencies.get(key) || 0) + 1);
+    }
+  }
+
+  // --- Node Analysis ---
+  const nodeValues = Array.from(nodeFrequencies.values());
+  const minNodeFrequency = Math.min(...nodeValues);
+  const maxNodeFrequency = Math.max(...nodeValues);
+
+  const nodes: Node[] = LOTTERY_NUMBERS.map(id => {
+    const frequency = nodeFrequencies.get(id)!;
+    const normalizedFrequency = maxNodeFrequency === minNodeFrequency ? 1 : (frequency - minNodeFrequency) / (maxNodeFrequency - minNodeFrequency);
+    return { id, frequency, normalizedFrequency };
+  });
+
+  // --- Edge Analysis ---
+  const edgeValues = Array.from(edgeFrequencies.values());
+  const minEdgeFrequency = edgeValues.length > 0 ? Math.min(...edgeValues) : 0;
+  const maxEdgeFrequency = edgeValues.length > 0 ? Math.max(...edgeValues) : 1;
+
+  const edges: Edge[] = Array.from(edgeFrequencies.entries()).map(([key, frequency]) => {
+    const [source, target] = key.split('-').map(Number);
+    const normalizedFrequency = maxEdgeFrequency === minEdgeFrequency ? 1 : (frequency - minEdgeFrequency) / (maxEdgeFrequency - minEdgeFrequency);
+    return { source, target, frequency, normalizedFrequency };
+  });
+
+  console.log(`Análise SEQUENCIAL - Arestas criadas: ${edges.length} (máximo: ${selectedGames.length * 14})`);
+
+  // --- Game Sum Distribution ---
+  const gameSumCounts: Map<number, number> = new Map();
+  for (const game of selectedGames) {
+    const sum = game.reduce((acc, num) => acc + num, 0);
+    gameSumCounts.set(sum, (gameSumCounts.get(sum) || 0) + 1);
+  }
+
+  const sumValues = Array.from(gameSumCounts.values());
+  const maxSumCount = sumValues.length > 0 ? Math.max(...sumValues) : 1;
+
+  const gameSumDistribution: GameSumDistribution[] = Array.from(gameSumCounts.entries())
+    .sort(([a], [b]) => a - b)
+    .map(([sum, count]) => {
+      const range = `${sum}`;
+      const normalizedCount = count / maxSumCount;
+      return { sumRange: range, count, normalizedCount };
+    });
+
+  return {
+    nodes,
+    edges,
+    totalGames: selectedGames.length,
+    minNodeFrequency,
+    maxNodeFrequency,
+    minEdgeFrequency,
+    maxEdgeFrequency,
+    gameSumDistribution
+  };
+};
+
+// Função para análise incremental baseada no número de jogos
+export const analyzeGamesIncremental = (games: Game[], maxGames: number): AnalysisResult | null => {
+  if (games.length === 0 || maxGames <= 0) return null;
+
+  // Usar apenas os primeiros N jogos
+  const selectedGames = games.slice(0, Math.min(maxGames, games.length));
+  
+  console.log(`Análise incremental: usando ${selectedGames.length} de ${games.length} jogos`);
+
+  const nodeFrequencies: Map<number, number> = new Map();
+  const edgeFrequencies: Map<string, number> = new Map();
+
+  LOTTERY_NUMBERS.forEach(num => nodeFrequencies.set(num, 0));
+
+  for (const game of selectedGames) {
+    const sortedGame = [...game].sort((a, b) => a - b);
+    for (const num of sortedGame) {
+      nodeFrequencies.set(num, (nodeFrequencies.get(num) || 0) + 1);
+    }
+    // Generate edges for all pairs in the sorted game for a denser graph
+    for (let i = 0; i < sortedGame.length; i++) {
+        for (let j = i + 1; j < sortedGame.length; j++) {
+            const source = sortedGame[i];
+            const target = sortedGame[j];
+            const key = `${source}-${target}`;
+            edgeFrequencies.set(key, (edgeFrequencies.get(key) || 0) + 1);
+        }
+    }
+  }
+
+  // --- Node Analysis ---
+  const nodeValues = Array.from(nodeFrequencies.values());
+  const minNodeFrequency = Math.min(...nodeValues);
+  const maxNodeFrequency = Math.max(...nodeValues);
+
+  const nodes: Node[] = LOTTERY_NUMBERS.map(id => {
+    const frequency = nodeFrequencies.get(id)!;
+    const normalizedFrequency = maxNodeFrequency === minNodeFrequency ? 1 : (frequency - minNodeFrequency) / (maxNodeFrequency - minNodeFrequency);
+    return { id, frequency, normalizedFrequency };
+  });
+
+  // --- Edge Analysis ---
+  const edgeValues = Array.from(edgeFrequencies.values());
+  const minEdgeFrequency = edgeValues.length > 0 ? Math.min(...edgeValues) : 0;
+  const maxEdgeFrequency = edgeValues.length > 0 ? Math.max(...edgeValues) : 1;
+
+  const edges: Edge[] = Array.from(edgeFrequencies.entries()).map(([key, frequency]) => {
+    const [source, target] = key.split('-').map(Number);
+    const normalizedFrequency = maxEdgeFrequency === minEdgeFrequency ? 1 : (frequency - minEdgeFrequency) / (maxEdgeFrequency - minEdgeFrequency);
+    return { source, target, frequency, normalizedFrequency };
+  });
+
+  // --- Game Sum Distribution ---
+  const gameSumCounts: Map<number, number> = new Map();
+  for (const game of selectedGames) {
+    const sum = game.reduce((acc, num) => acc + num, 0);
+    gameSumCounts.set(sum, (gameSumCounts.get(sum) || 0) + 1);
+  }
+
+  const sumValues = Array.from(gameSumCounts.values());
+  const maxSumCount = sumValues.length > 0 ? Math.max(...sumValues) : 1;
+
+  const gameSumDistribution: GameSumDistribution[] = Array.from(gameSumCounts.entries())
+    .sort(([a], [b]) => a - b)
+    .map(([sum, count]) => {
+      const minSum = Math.min(...Array.from(gameSumCounts.keys()));
+      const maxSum = Math.max(...Array.from(gameSumCounts.keys()));
+      const range = `${sum}`;
+      const normalizedCount = count / maxSumCount;
+      return { sumRange: range, count, normalizedCount };
+    });
+
+  return {
+    nodes,
+    edges,
+    totalGames: selectedGames.length,
+    minNodeFrequency,
+    maxNodeFrequency,
+    minEdgeFrequency,
+    maxEdgeFrequency,
+    gameSumDistribution
+  };
+};
+
 export const analyzeGames = (games: Game[]): AnalysisResult | null => {
   if (games.length === 0) return null;
 
