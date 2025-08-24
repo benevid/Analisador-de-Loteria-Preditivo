@@ -1,4 +1,3 @@
-
 export type Game = number[];
 
 export interface Node {
@@ -29,4 +28,9 @@ export interface GenerationOptions {
   avoidSequences: boolean;
   minNodeStrength: number;
   minEdgeStrength: number;
+}
+
+export interface ChatMessage {
+  sender: 'user' | 'ai';
+  text: string;
 }

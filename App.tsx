@@ -4,6 +4,7 @@ import { parseAndMergeGames, analyzeGames, generateGame } from './services/lotte
 import { Matrix2DView } from './components/Matrix2DView';
 import { ThreeScene } from './components/ThreeScene';
 import { DataView } from './components/DataView';
+import { AiAssistant } from './components/AiAssistant';
 
 // --- ICONS (as components) ---
 const ChartBarIcon: React.FC<{className?: string}> = ({className}) => (
@@ -132,6 +133,7 @@ const App: React.FC = () => {
                     </>
                 )}
             </main>
+            <AiAssistant analysis={analysis} />
         </div>
     );
 };
