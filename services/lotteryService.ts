@@ -1,5 +1,5 @@
 import Papa from 'papaparse';
-import type { Game, AnalysisResult, GenerationOptions, Node, Edge } from '../types';
+import type { Game, AnalysisResult, GenerationOptions, Node, Edge, GameSumDistribution } from '../types';
 
 const LOTTERY_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1);
 const GAME_SIZE = 15;
@@ -69,15 +69,18 @@ export const analyzeGames = (games: Game[]): AnalysisResult | null => {
     for (const num of sortedGame) {
       nodeFrequencies.set(num, (nodeFrequencies.get(num) || 0) + 1);
     }
-    // Generate edges for adjacent pairs in the sorted game
-    for (let i = 0; i < sortedGame.length - 1; i++) {
-        const source = sortedGame[i];
-        const target = sortedGame[i+1];
-        const key = `${source}-${target}`;
-        edgeFrequencies.set(key, (edgeFrequencies.get(key) || 0) + 1);
+    // Generate edges for all pairs in the sorted game for a denser graph
+    for (let i = 0; i < sortedGame.length; i++) {
+        for (let j = i + 1; j < sortedGame.length; j++) {
+            const source = sortedGame[i];
+            const target = sortedGame[j];
+            const key = `${source}-${target}`;
+            edgeFrequencies.set(key, (edgeFrequencies.get(key) || 0) + 1);
+        }
     }
   }
 
+  // --- Node Analysis ---
   const nodeValues = Array.from(nodeFrequencies.values());
   const minNodeFrequency = Math.min(...nodeValues);
   const maxNodeFrequency = Math.max(...nodeValues);
@@ -88,6 +91,7 @@ export const analyzeGames = (games: Game[]): AnalysisResult | null => {
     return { id, frequency, normalizedFrequency };
   });
 
+  // --- Edge Analysis ---
   const edgeValues = Array.from(edgeFrequencies.values());
   const minEdgeFrequency = edgeValues.length > 0 ? Math.min(...edgeValues) : 0;
   const maxEdgeFrequency = edgeValues.length > 0 ? Math.max(...edgeValues) : 1;
@@ -98,6 +102,36 @@ export const analyzeGames = (games: Game[]): AnalysisResult | null => {
     return { source, target, frequency, normalizedFrequency };
   });
 
+  // --- Game Sum Distribution Analysis ---
+    const gameSums: number[] = games.map(game => game.reduce((a, b) => a + b, 0));
+    const sumCounts: Map<string, number> = new Map();
+    const BUCKET_SIZE = 10;
+    
+    for (const sum of gameSums) {
+      const lowerBound = Math.floor(sum / BUCKET_SIZE) * BUCKET_SIZE;
+      const upperBound = lowerBound + BUCKET_SIZE - 1;
+      const key = `${lowerBound}-${upperBound}`;
+      sumCounts.set(key, (sumCounts.get(key) || 0) + 1);
+    }
+
+    const counts = Array.from(sumCounts.values());
+    const maxCount = counts.length > 0 ? Math.max(...counts) : 0;
+    
+    const sortedRanges = Array.from(sumCounts.keys()).sort((a, b) => {
+        const aLower = parseInt(a.split('-')[0], 10);
+        const bLower = parseInt(b.split('-')[0], 10);
+        return aLower - bLower;
+    });
+
+    const gameSumDistribution: GameSumDistribution[] = sortedRanges.map(range => {
+        const count = sumCounts.get(range)!;
+        return {
+            sumRange: range,
+            count: count,
+            normalizedCount: maxCount > 0 ? count / maxCount : 0
+        };
+    });
+
   return {
     nodes,
     edges,
@@ -105,7 +139,8 @@ export const analyzeGames = (games: Game[]): AnalysisResult | null => {
     minNodeFrequency,
     maxNodeFrequency,
     minEdgeFrequency,
-    maxEdgeFrequency
+    maxEdgeFrequency,
+    gameSumDistribution,
   };
 };
 

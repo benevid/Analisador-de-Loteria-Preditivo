@@ -5,6 +5,8 @@ import { Matrix2DView } from './components/Matrix2DView';
 import { ThreeScene } from './components/ThreeScene';
 import { DataView } from './components/DataView';
 import { AiAssistant } from './components/AiAssistant';
+import { FrequencyHeatmap } from './components/FrequencyHeatmap';
+import { GameSumHistogram } from './components/GameSumHistogram';
 
 // --- ICONS (as components) ---
 const ChartBarIcon: React.FC<{className?: string}> = ({className}) => (
@@ -98,7 +100,7 @@ const App: React.FC = () => {
                  {successMessage && <Notification type="success" message={successMessage} onDismiss={() => setSuccessMessage(null)} />}
             </div>
 
-            <main className="flex-grow flex flex-col">
+            <main className="flex-grow flex flex-col min-h-0">
                 {isLoading && (
                     <div className="flex-grow flex items-center justify-center">
                         <div className="text-xl animate-pulse">Analisando dados...</div>
@@ -115,22 +117,23 @@ const App: React.FC = () => {
                 )}
 
                 {!isLoading && analysis && (
-                    <>
-                        <div className={`${activeSection === 'dashboard' ? 'flex' : 'hidden'} flex-col h-full flex-grow`}>
+                    <div className="flex-grow min-h-0">
+                        <div className={`${activeSection === 'dashboard' ? 'h-full' : 'hidden'}`}>
                             <Dashboard analysis={analysis} />
                         </div>
-                         <div className={`${activeSection === 'data' ? 'block' : 'hidden'} h-full flex-grow`}>
+                         <div className={`${activeSection === 'data' ? 'block' : 'hidden'} h-full`}>
                             <DataView games={games} />
                         </div>
-                        <div className={`${activeSection === 'generator' ? 'block' : 'hidden'} h-full flex-grow`}>
+                        <div className={`${activeSection === 'generator' ? 'block' : 'hidden'} h-full`}>
                             <NumberGenerator 
                                 analysis={analysis}
                                 existingGames={games}
                                 generatedGames={generatedGames}
                                 setGeneratedGames={setGeneratedGames}
+                                setError={setError}
                             />
                         </div>
-                    </>
+                    </div>
                 )}
             </main>
             <AiAssistant analysis={analysis} />
@@ -178,7 +181,7 @@ const Header: React.FC<{
 );
 
 const Dashboard: React.FC<{ analysis: AnalysisResult }> = ({ analysis }) => {
-    const [view, setView] = useState<'3d-graph' | '2d-matrix' | '3d-interactive'>('3d-graph');
+    const [view, setView] = useState<'3d-graph' | '2d-matrix' | '3d-interactive' | 'heatmap' | 'sum-histogram'>('3d-graph');
     
     const { mostFrequent, leastFrequent } = useMemo(() => {
         if (!analysis || analysis.nodes.length === 0) {
@@ -194,7 +197,8 @@ const Dashboard: React.FC<{ analysis: AnalysisResult }> = ({ analysis }) => {
     }, [analysis]);
 
     return (
-        <div className="flex flex-col h-full gap-4">
+        <div className="grid grid-rows-[auto_auto_1fr] h-full gap-4">
+             {/* Row 1: Stats */}
              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                 <div className="bg-slate-800 p-4 rounded-lg">
                     <h4 className="text-sm font-semibold text-slate-400">Total de Jogos Analisados</h4>
@@ -210,15 +214,22 @@ const Dashboard: React.FC<{ analysis: AnalysisResult }> = ({ analysis }) => {
                 </div>
             </div>
             
-            <div className="flex justify-center bg-slate-800 p-1 rounded-lg self-center">
+            {/* Row 2: Buttons */}
+            <div className="flex justify-center bg-slate-800 p-1 rounded-lg self-center flex-wrap">
                 <button onClick={() => setView('3d-graph')} className={`px-4 py-2 rounded-md transition-colors ${view === '3d-graph' ? 'bg-cyan-500 text-white' : 'hover:bg-slate-700'}`}>Grafo 3D</button>
                 <button onClick={() => setView('2d-matrix')} className={`px-4 py-2 rounded-md transition-colors ${view === '2d-matrix' ? 'bg-cyan-500 text-white' : 'hover:bg-slate-700'}`}>Quadro 2D</button>
+                <button onClick={() => setView('heatmap')} className={`px-4 py-2 rounded-md transition-colors ${view === 'heatmap' ? 'bg-cyan-500 text-white' : 'hover:bg-slate-700'}`}>Mapa de Calor</button>
+                <button onClick={() => setView('sum-histogram')} className={`px-4 py-2 rounded-md transition-colors ${view === 'sum-histogram' ? 'bg-cyan-500 text-white' : 'hover:bg-slate-700'}`}>Histograma de Somas</button>
                 <button onClick={() => setView('3d-interactive')} className={`px-4 py-2 rounded-md transition-colors ${view === '3d-interactive' ? 'bg-cyan-500 text-white' : 'hover:bg-slate-700'}`}>Interativo 3D</button>
             </div>
-            <div className="flex-grow w-full h-full min-h-[50vh] bg-slate-800 rounded-lg p-2 relative">
+            
+            {/* Row 3: Visualization Area */}
+            <div className="w-full bg-slate-800 rounded-lg p-2 relative min-h-0">
                  {view === '2d-matrix' && <Matrix2DView analysis={analysis} />}
                  {view === '3d-graph' && <ThreeScene analysis={analysis} mode="graph" />}
                  {view === '3d-interactive' && <ThreeScene analysis={analysis} mode="interactive" />}
+                 {view === 'heatmap' && <FrequencyHeatmap analysis={analysis} />}
+                 {view === 'sum-histogram' && <GameSumHistogram analysis={analysis} />}
             </div>
         </div>
     );
@@ -229,7 +240,8 @@ const NumberGenerator: React.FC<{
     existingGames: Game[];
     generatedGames: Game[];
     setGeneratedGames: React.Dispatch<React.SetStateAction<Game[]>>;
-}> = ({ analysis, existingGames, generatedGames, setGeneratedGames }) => {
+    setError: React.Dispatch<React.SetStateAction<string | null>>;
+}> = ({ analysis, existingGames, generatedGames, setGeneratedGames, setError }) => {
     const [options, setOptions] = useState<GenerationOptions>({
         avoidExistingGames: true,
         avoidSequences: true,
@@ -240,7 +252,12 @@ const NumberGenerator: React.FC<{
 
     const handleGenerate = () => {
         const newGame = generateGame(analysis, options, [...existingGames, ...generatedGames]);
-        setLastGenerated(newGame);
+        if (newGame) {
+            setLastGenerated(newGame);
+        } else {
+            setLastGenerated(null);
+            setError("Não foi possível gerar um jogo. Tente ajustar os filtros de força para serem menos restritivos.");
+        }
     };
 
     const handleSave = () => {
@@ -255,7 +272,7 @@ const NumberGenerator: React.FC<{
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
             <div className="md:col-span-1 bg-slate-800 p-6 rounded-lg flex flex-col gap-6">
                 <h3 className="text-xl font-bold border-b border-slate-600 pb-2">Opções de Geração</h3>
                 <div className="flex items-center justify-between">

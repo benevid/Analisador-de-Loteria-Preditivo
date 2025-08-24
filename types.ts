@@ -13,6 +13,12 @@ export interface Edge {
   normalizedFrequency: number;
 }
 
+export interface GameSumDistribution {
+  sumRange: string;
+  count: number;
+  normalizedCount: number;
+}
+
 export interface AnalysisResult {
   nodes: Node[];
   edges: Edge[];
@@ -21,6 +27,7 @@ export interface AnalysisResult {
   maxNodeFrequency: number;
   minEdgeFrequency: number;
   maxEdgeFrequency: number;
+  gameSumDistribution: GameSumDistribution[];
 }
 
 export interface GenerationOptions {
