@@ -337,16 +337,22 @@ Analisador-de-Loteria-Preditivo/
 
 ### **⚙️ Variáveis de Ambiente**
 
-Crie um arquivo `.env.local` na raiz do projeto:
+Crie um arquivo `.env.local` baseado no `env.local.example`:
 
 ```env
-# IA Assistant (opcional)
-GEMINI_API_KEY=sua_chave_do_gemini_aqui
+# Google Gemini AI API Key (obrigatória para Assistente IA)
+VITE_GEMINI_API_KEY=sua_chave_do_gemini_aqui
 
-# Configurações de desenvolvimento (opcional)
-VITE_APP_NAME=Analisador de Loteria
+# Configurações opcionais do projeto
+VITE_APP_NAME="Analisador de Loteria Preditivo"
 VITE_DEBUG_MODE=false
 ```
+
+**🔑 Chave do Gemini AI:**
+- **Obrigatória**: Para usar o Assistente IA
+- **Como obter**: [Google AI Studio](https://makersuite.google.com/app/apikey)
+- **Gratuita**: Limits generosos para uso pessoal
+- **Segurança**: Nunca commite a chave no repositório
 
 ### **🎯 Personalização de Parâmetros**
 
