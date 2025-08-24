@@ -11,7 +11,44 @@
 
 *Descubra padrões, visualize tendências e explore dados da Lotofácil com tecnologia de ponta*
 
+![Dashboard Principal](imagens/01.png)
+*Dashboard principal com múltiplas visualizações e player automático*
+
 </div>
+
+---
+
+## 📊 **Galeria de Funcionalidades**
+
+### 🎯 **Interface Principal**
+O dashboard oferece uma visão completa dos dados com estatísticas em tempo real e controle total sobre a análise:
+
+![Dashboard Completo](imagens/01.png)
+*Interface principal mostrando estatísticas, controles de visualização e player automático*
+
+### 📏 **Visualizações 2D Avançadas**
+Mapa de calor inteligente e matriz 2D com conexões curvas que evitam sobreposição:
+
+![Visualizações 2D](imagens/02.png)
+*Esquerda: Mapa de calor 5x5 | Direita: Matriz 2D com linhas curvas sequenciais*
+
+### 🌍 **Renderização 3D Interativa**
+Grafos tridimensionais com física realista e interação em tempo real:
+
+![Visualizações 3D](imagens/03.png)
+*Grafo 3D com nós posicionados por frequência e conexões sequenciais*
+
+### 🎬 **Player Automático Avançado**
+Controle temporal completo para observar a evolução dos padrões:
+
+![Player Automático](imagens/04.png)
+*Player com 5 velocidades, controles profissionais e feedback visual em tempo real*
+
+### 🎲 **Gerador + Assistente IA**
+Geração inteligente de jogos e análise contextual por IA:
+
+![Gerador e IA](imagens/05.png)
+*Gerador com filtros avançados e assistente IA integrado com Google Gemini*
 
 ---
 
@@ -156,6 +193,86 @@ Concurso,Data,Bola1,Bola2,Bola3,Bola4,Bola5,Bola6,Bola7,Bola8,Bola9,Bola10,Bola1
 3. **Selecione o arquivo CSV** da Lotofácil
 4. **Aguarde o processamento** (pode demorar alguns segundos)
 5. **Explore as visualizações!** 🎉
+
+---
+
+## 🎯 **Fluxo de Uso do Sistema**
+
+### **📊 1. Dashboard e Análise**
+Após carregar os dados, o dashboard principal oferece uma visão completa com estatísticas em tempo real:
+
+![Interface Principal](imagens/01.png)
+*Dashboard com estatísticas dos números mais/menos frequentes e controles de visualização*
+
+**Recursos disponíveis:**
+- **Estatísticas instantâneas**: Números mais e menos frequentes
+- **Player automático**: Controles de reprodução temporal
+- **Seletor de visualizações**: 5 tipos diferentes de análise
+- **Contador de jogos**: Total de resultados processados
+
+### **📈 2. Visualizações 2D Interativas**
+O sistema oferece duas visualizações 2D complementares para análise detalhada:
+
+![Visualizações 2D](imagens/02.png)
+*Esquerda: Mapa de calor com grid 5x5 | Direita: Matriz 2D com conexões curvas*
+
+**Mapa de Calor (Esquerda):**
+- **Grid 5x5**: Todos os 25 números organizados
+- **Cores intensas**: Vermelho = mais frequente, Azul = menos frequente
+- **Tooltips**: Informações detalhadas ao passar o mouse
+- **Legenda**: Escala de cores e estatísticas
+
+**Matriz 2D (Direita):**
+- **Conexões sequenciais**: Linhas entre números consecutivos nos sorteios
+- **Curvas elegantes**: Evitam sobreposição com os números
+- **Espessura proporcional**: Linhas mais grossas = sequências mais repetidas
+- **Cores vibrantes**: Intensidade baseada na frequência
+
+### **🌍 3. Visualizações 3D Avançadas**
+Grafos tridimensionais oferecem uma perspectiva imersiva dos dados:
+
+![Visualizações 3D](imagens/03.png)
+*Grafo 3D com nós posicionados por frequência e conexões sequenciais*
+
+**Características 3D:**
+- **Posicionamento inteligente**: Altura baseada na frequência dos números
+- **Conexões realistas**: Apenas entre números consecutivos nos resultados
+- **Rotação automática**: Visão 360° dos padrões
+- **Interatividade**: Zoom, pan e rotação manual
+- **Cores dinâmicas**: Sistema de cores baseado na intensidade
+
+### **🎬 4. Player Automático em Ação**
+Recurso exclusivo para observar a evolução temporal dos padrões:
+
+![Player Automático](imagens/04.png)
+*Controles profissionais com 5 velocidades e feedback visual em tempo real*
+
+**Funcionalidades do Player:**
+- **Controles profissionais**: Play/Pause/Stop como um media player
+- **5 velocidades**: De 0.5x (análise lenta) até 4x (visão geral)
+- **Indicadores visuais**: Status, progresso e jogos restantes
+- **Evolução gradual**: Veja padrões se formarem incrementalmente
+- **Sincronização**: Todas as visualizações atualizam simultaneamente
+
+### **🎲 5. Geração de Jogos e IA**
+Ferramentas avançadas para geração inteligente e análise por IA:
+
+![Gerador e IA](imagens/05.png)
+*Esquerda: Gerador com filtros | Direita: Assistente IA integrado*
+
+**Gerador Inteligente (Esquerda):**
+- **Algoritmos estatísticos**: Baseados na frequência e conexões
+- **Filtros configuráveis**: Evita duplicatas e sequências óbvias
+- **Parâmetros ajustáveis**: Força mínima de nós e arestas
+- **Gestão completa**: Salvar, visualizar e exportar jogos
+- **Exportação CSV**: Para uso em outros sistemas
+
+**Assistente IA (Direita):**
+- **Google Gemini integrado**: IA de última geração
+- **Análise contextual**: Interpreta os padrões encontrados
+- **Insights personalizados**: Respostas baseadas nos seus dados
+- **Recomendações**: Sugestões estratégicas para jogos
+- **Chat intuitivo**: Interface conversacional natural
 
 ---
 
